@@ -5,9 +5,32 @@ import json
 from datetime import datetime
 from typing import Any, Callable, Type
 
+import colorama
+from colorama import Fore
 from langchain_core.utils.function_calling import convert_to_openai_tool
 from openai import OpenAI
 from pydantic.v1 import BaseModel, validator
+
+SYSTEM_MESSAGE = """You are tasked with comleting specific objectives and must report
+the outcomes. At your disposal, you have a variety of tools, each specialized in 
+performing a distinct type of task.
+
+For successful task completion:
+Thought: Consider the task at hand and determine which tool is best suited based on 
+its capabilities and the nature of the work.
+
+Use the report_tool with an instruction detailing the results of your work. If you 
+encounter an issue and cannot complete the task:
+
+Use the report_tool to communicate the challenge or reason for the task's incompletion.
+
+You will receive feedback based on the outcomes of each tool's task execution or 
+explanations for any tasks that couldn't be completed. This feedback loop is crucial 
+for addressing and resolving any issues by strategically deploying the available tools.
+"""
+MODEL = "gpt-3.5-turbo-0125"
+MAX_STEPS = 5
+COLOR = "green"
 
 
 class Expense(BaseModel):
@@ -20,6 +43,10 @@ class Expense(BaseModel):
 
 class Report(BaseModel):
     report: str
+
+
+class DateTool(BaseModel):
+    x: str = None
 
 
 class ToolResult(BaseModel):
@@ -73,6 +100,107 @@ class Tool(BaseModel):
         return schema
 
 
+class StepResult(BaseModel):
+    event: str
+    content: str
+    success: bool
+
+
+class OpenAIAgent:
+    def __init__(
+        self,
+        tools: list[Tool],
+        client: OpenAI,
+        system_message: str = SYSTEM_MESSAGE,
+        model_name: str = MODEL,
+        max_steps: int = MAX_STEPS,
+        verbose: bool = True,
+    ):
+        self.tools = tools
+        self.client = client
+        self.model_name = model_name
+        self.system_message = system_message
+        self.step_history = []
+        self.max_steps = max_steps
+        self.verbose = verbose
+
+    def to_console(self, tag: str, message: str, color: str = COLOR):
+        if self.verbose:
+            color_prefix = Fore.__dict__[color.upper()]
+            print(color_prefix + f"{tag}: {message}{colorama.Style.RESET_ALL}")
+
+    def run(self, user_input: str):
+        openai_tools = [tool.openai_tool_schema for tool in self.tools]
+        self.step_history = [
+            {"role": "system", "content": self.system_message},
+            {"role": "user", "content": user_input},
+        ]
+
+        step_result = None
+        i = 0
+
+        self.to_console("START", f"Starting agent with input: {user_input}")
+
+        while i < self.max_steps:
+            step_result = self.run_step(self.step_history, openai_tools)
+
+            if step_result.event == "finish":
+                break
+            elif step_result.event == "error":
+                self.to_console(step_result.event, step_result.content, "red")
+            else:
+                self.to_console(step_result.event, step_result.content, "yellow")
+            i += 1
+
+        self.to_console("Final Result", step_result.content, COLOR)
+        return step_result.content
+
+    def run_step(self, messages: list[dict], tools):
+
+        # Plan next step
+        response = self.client.chat.completions.create(
+            model=self.model_name, messages=messages, tools=tools
+        )
+        self.step_history.append(response.choices[0].message)
+
+        # Check if tool call is present
+        if not response.choices[0].message.tool_calls:
+            return StepResult(
+                event="Error", content="No tool calls were returned", success=False
+            )
+
+        tool_name = response.choices[0].message.tool_calls[0].function.name
+        tool_kwargs = parse_function_args(response)
+
+        # Execute tool call
+        self.to_console(
+            "Tool Call", f"Name: {tool_name}\nArgs: {tool_kwargs}", "magenta"
+        )
+        tool_result = run_tool_from_response(response, tools=self.tools)
+        tool_result_msg = self.tool_call_message(response, tool_result)
+        self.step_history.append(tool_result_msg)
+
+        if tool_result.success:
+            step_result = StepResult(
+                event="tool_result", content=tool_result.content, success=True
+            )
+        else:
+            step_result = StepResult(
+                event="error", content=tool_result.content, success=False
+            )
+
+        return step_result
+
+    def tool_call_message(self, response, tool_result: ToolResult):
+        tool_call = response.choices[0].message.tool_calls[0]
+        return {
+            "tool_call_id": tool_call.id,
+            "role": "tool",
+            "name": tool_call.function.name,
+            "content": tool_result.content,
+        }
+
+
 def add_expense_func(**kwargs):
     return f"Added: expense: {kwargs} to the database."
 
@@ -102,29 +230,6 @@ def run_tool_from_response(response, tools):
 
 
 # %%
-SYSTEM_MESSAGE = """You are tasked with comleting specific objectives and must report
-the outcomes. At your disposal, you have a variety of tools, each specialized in 
-performing a distinct type of task.
-
-For successful task completion:
-Thought: Consider the task at hand and determine which tool is best suited based on 
-its capabilities and the nature of the work.
-
-Use the report_tool with an instruction detailing the results of your work. If you 
-encounter an issue and cannot complete the task:
-
-Use the report_tool to communicate the challenge or reason for the task's incompletion.
-
-You will receive feedback based on the outcomes of each tool's task execution or 
-explanations for any tasks that couldn't be completed. This feedback loop is crucial 
-for addressing and resolving any issues by strategically deploying the available tools.
-"""
-
-user_message = (
-    "I have spend 5$ on a coffee today please track my expense. The tax rate is 0.2."
-)
-
-# %%
 add_expense_tool = Tool(
     name="add_expense_tool",
     model=Expense,
@@ -136,20 +241,17 @@ report_tool = Tool(
     name="report_tool", model=Report, function=report_func, validate_missing=True
 )
 
-tools = [add_expense_tool, report_tool]
-
-client = OpenAI()
-model_name = "gpt-3.5-turbo-0125"
-messages = [
-    {"role": "system", "content": SYSTEM_MESSAGE},
-    {"role": "user", "content": user_message},
-]
-
-response = client.chat.completions.create(
-    model=model_name,
-    messages=messages,
-    tools=[tool.openai_tool_schema for tool in tools],
+get_date_tool = Tool(
+    name="get_current_date",
+    model=DateTool,
+    function=lambda: datetime.now().strftime("%Y-%m-%d"),
+    validate_missing=False,
 )
 
-tool_result = run_tool_from_response(response, tools=tools)
-print(tool_result)
+tools = [add_expense_tool, report_tool, get_date_tool]
+
+client = OpenAI()
+agent = OpenAIAgent(tools, client)
+agent.run(
+    user_input="I have spend 5$ on a coffee today please track my expense. The tax rate is 0.2."
+)
