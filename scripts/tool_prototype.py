@@ -29,7 +29,7 @@ explanations for any tasks that couldn't be completed. This feedback loop is cru
 for addressing and resolving any issues by strategically deploying the available tools.
 """
 MODEL = "gpt-3.5-turbo-0125"
-MAX_STEPS = 5
+MAX_STEPS = 7
 COLOR = "green"
 
 
@@ -39,6 +39,7 @@ class Expense(BaseModel):
     gross_amount: float
     tax_rate: float
     date: datetime
+    vendor: str
 
 
 class Report(BaseModel):
