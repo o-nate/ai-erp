@@ -34,7 +34,7 @@ Return only one tool call at a time.
 
 {context}
 """
-MODEL = "gpt-3.5-turbo-0125"
+MODEL = "gpt-4o-mini"
 MAX_STEPS = 5
 COLOR = "green"
 
@@ -111,17 +111,20 @@ class OpenAIAgent:
         return step_result.content
 
     def run_step(self, messages: list[dict], tools):
+        logger.debug("Starting run_step with messages: %s", messages)
 
         # Plan next step
         response = self.client.chat.completions.create(
             model=self.model_name, messages=messages, tools=tools
         )
+        logger.debug("Got response from OpenAI: %s", response.choices[0].message)
 
         # Check for multiple tool calls
         if (
             response.choices[0].message.tool_calls
             and len(response.choices[0].message.tool_calls) > 1
         ):
+            logger.warning("Multiple tool calls detected, requesting single tool call")
             messages = [
                 *self.step_history,
                 {
@@ -136,6 +139,7 @@ class OpenAIAgent:
         # Check if tool call is present
         if not response.choices[0].message.tool_calls:
             msg = response.choices[0].message.content
+            logger.warning("No tool calls returned in response: %s", msg)
             return StepResult(
                 event="Error",
                 content=f"No tool calls were returned.\nMessage: {msg}",
@@ -144,12 +148,14 @@ class OpenAIAgent:
 
         tool_name = response.choices[0].message.tool_calls[0].function.name
         tool_kwargs = parse_function_args(response)
+        logger.debug("Tool call detected - Name: %s, Args: %s", tool_name, tool_kwargs)
 
         # Execute tool call
         self.to_console(
             "Tool Call", f"Name: {tool_name}\nArgs: {tool_kwargs}", "magenta"
         )
         tool_result = run_tool_from_response(response, tools=self.tools)
+        logger.debug("Tool execution result: %s", tool_result)
         tool_result_msg = self.tool_call_message(response, tool_result)
         self.step_history.append(tool_result_msg)
 

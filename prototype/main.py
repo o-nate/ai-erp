@@ -6,7 +6,7 @@ from pydantic.v1 import BaseModel
 from src.agent import OpenAIAgent
 from src.tool import Tool
 
-MODEL = "gpt-3.5-turbo-0125"
+MODEL = "gpt-4o-mini"
 MAX_STEPS = 7
 COLOR = "green"
 

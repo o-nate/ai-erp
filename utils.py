@@ -88,6 +88,8 @@ def generate_query_context(*table_models) -> str:
 def main() -> None:
     """Run script"""
     logger.info(generate_query_context(Expense, Revenue))
+    logger.info(generate_query_context(Expense))
+    logger.info(generate_query_context(Revenue))
 
 
 if __name__ == "__main__":

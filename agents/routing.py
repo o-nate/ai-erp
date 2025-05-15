@@ -7,7 +7,7 @@ from openai import OpenAI
 from agents.task import TaskAgent
 from agents.utils import parse_function_args
 
-MODEL = "gpt-3.5-turbo-0125"
+MODEL = "gpt-4o-mini"
 MAX_STEPS = 5
 COLOR = "green"
 

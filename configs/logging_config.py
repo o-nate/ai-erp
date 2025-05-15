@@ -14,6 +14,7 @@ THIRD_PARTIES_TO_SUPPRESS = [
     "httpx",
     "httpcore",
     "openai",
+    "sqlalchemy",
 ]
 
 LOG_DIR = "logs"
@@ -47,7 +48,7 @@ LOGGING_CONFIG = {
         "console": {
             "class": "logging.StreamHandler",
             "formatter": "standard",
-            "level": "INFO",
+            "level": "DEBUG",
         },
         "file": {
             "class": "logging.FileHandler",

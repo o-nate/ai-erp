@@ -33,6 +33,7 @@ def main() -> None:
         function=add_entry_to_table(Expense),
         model=Expense,
         validate_missing=True,
+        # parse_model=True,
     )
     add_revenue_tool = Tool(
         name="add_revenue_tool",
@@ -40,12 +41,14 @@ def main() -> None:
         function=add_entry_to_table(Revenue),
         model=Revenue,
         validate_missing=True,
+        parse_model=True,
     )
     add_customer_tool = Tool(
         name="add_customer_tool",
         description="Useful for adding a customer to the database",
         function=add_entry_to_table(Customer),
         model=Customer,
+        parse_model=True,
     )
     query_data_tool = Tool(
         name="query_data_tool",
