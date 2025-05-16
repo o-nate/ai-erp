@@ -8,7 +8,6 @@ from database.models import Expense, Revenue, Customer
 from tools.add import add_entry_to_table
 from tools.base import Tool
 from tools.query import QueryConfig, query_data_function
-from tools.report_tool import report_function, ReportSchema
 
 from configs.logging_config import get_logger
 from configs.model_configs import (
@@ -38,14 +37,14 @@ def main() -> None:
         function=add_entry_to_table(Revenue),
         model=Revenue,
         validate_missing=True,
-        parse_model=True,
+        # parse_model=True,
     )
     add_customer_tool = Tool(
         name="add_customer_tool",
         description="Useful for adding a customer to the database",
         function=add_entry_to_table(Customer),
         model=Customer,
-        parse_model=True,
+        # parse_model=True,
     )
     query_data_tool = Tool(
         name="query_data_tool",

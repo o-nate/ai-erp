@@ -184,6 +184,7 @@ class OpenAIAgent:
             except:
                 logger.error("Tool result: %s", tool_result)
                 raise ValueError("Report tool failed to run")
+            return step_result
 
         elif tool_result.success:
             step_result = StepResult(

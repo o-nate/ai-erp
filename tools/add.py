@@ -1,6 +1,6 @@
 """Tool for adding data to the database"""
 
-from typing import Callable
+from typing import Callable, Type
 from datetime import datetime
 
 from sqlmodel import select, Session, SQLModel
@@ -24,23 +24,11 @@ def add_row_to_table(model_instance: SQLModel) -> str:
         raise
 
 
-def add_entry_to_table(sql_model: SQLModel) -> Callable:
-    """Takes a SQLModel instance and adds it to the table"""
-
-    def add_entry(**data):
-        try:
-            # Convert date string to datetime if needed
-            if "date" in data and isinstance(data["date"], str):
-                data["date"] = datetime.strptime(data["date"], "%Y-%m-%d")
-
-            # Create a new instance of the model
-            instance = sql_model(**data)
-            return add_row_to_table(instance)
-        except Exception as e:
-            logger.error("Error creating model instance: %s", str(e))
-            raise
-
-    return add_entry
+def add_entry_to_table(sql_model: Type[SQLModel]) -> Callable:
+    # return a Callable that takes a SQLModel instance and adds it to the table
+    return lambda **data: add_row_to_table(
+        model_instance=sql_model.model_validate(data)
+    )
 
 
 def main() -> None:

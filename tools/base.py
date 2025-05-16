@@ -1,5 +1,6 @@
 """Base class for tools"""
 
+import inspect
 from typing import Any, Callable, Type, Union
 
 from langchain_core.utils.function_calling import convert_to_openai_tool
@@ -34,9 +35,6 @@ class Tool(BaseModel):
 
     def run(self, **kwargs):
         """Responsible for executing the tool's function with the provided input arguments"""
-        logger.debug("Running tool %s with kwargs: %s", self.name, kwargs)
-        logger.debug("Type of self.function: %s", type(self.function))
-        import inspect
 
         try:
             logger.debug(
@@ -46,7 +44,14 @@ class Tool(BaseModel):
             if missing_values:
                 content = f"Missing values: {', '.join(missing_values)}"
                 return ToolResult(content=content, success=False)
-            result = self.function(**kwargs)
+            if self.parse_model:
+                if hasattr(self.model, "model_validate"):
+                    input_ = self.model.model_validate(kwargs)
+                else:
+                    input_ = self.model(**kwargs)
+                result = self.function(input_)
+            else:
+                result = self.function(**kwargs)
             return ToolResult(content=str(result), success=True)
         except Exception as e:
             logger.error("Error running tool %s: %s", self.name, str(e))
