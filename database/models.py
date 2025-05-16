@@ -7,6 +7,7 @@ from datetime import time, datetime
 from typing_extensions import Annotated
 
 from database.utils import numeric_validator, validate_date
+from configs.model_configs import TAX_RATE
 
 
 # === validator ===
@@ -142,7 +143,7 @@ class Expense(SQLModel, table=True):
     gross_amount: Optional[Numeric] = Field(
         default=None, description="The gross amount including tax"
     )
-    tax_rate: Numeric = Field(default=0.19, description="The tax rate applied")
+    tax_rate: Numeric = Field(default=TAX_RATE, description="The tax rate applied")
     date: DateFormat = Field(index=True)
 
     @model_validator(mode="after")

@@ -7,6 +7,11 @@ load_dotenv()
 from database.models import Expense, Revenue, Customer
 from agents.task import TaskAgent
 from utils import generate_query_context
+from configs.model_configs import (
+    TAX_REMARK,
+    EXPENSE_AMOUNT_REMARK,
+    REVENUE_AMOUNT_REMARK,
+)
 
 
 print(generate_query_context(Expense, Revenue, Customer))
@@ -38,7 +43,7 @@ add_expense_agent = TaskAgent(
     name="add_expense_agent",
     description="An agent that can add an expense to the database",
     create_user_context=lambda: generate_query_context(Expense)
-    + "\nRemarks: The tax rate is 0.19. The user provide the net amount you need to calculate the gross amount.",
+    + f"\nRemarks: {TAX_REMARK} {EXPENSE_AMOUNT_REMARK}",
     tools=[
         Tool(
             name="add_expense",
@@ -53,7 +58,7 @@ add_revenue_agent = TaskAgent(
     name="add_revenue_agent",
     description="An agent that can add a revenue entry to the database",
     create_user_context=lambda: generate_query_context(Revenue)
-    + "\nRemarks: The tax rate is 0.19. The user provide the gross_amount you should use the tax rate to calculate the net_amount.",
+    + f"\nRemarks: {TAX_REMARK} {REVENUE_AMOUNT_REMARK}",
     tools=[
         Tool(
             name="add_revenue",

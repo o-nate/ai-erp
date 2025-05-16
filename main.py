@@ -11,17 +11,14 @@ from tools.query import QueryConfig, query_data_function
 from tools.report_tool import report_function, ReportSchema
 
 from configs.logging_config import get_logger
+from configs.model_configs import (
+    TAX_REMARK,
+    EXPENSE_AMOUNT_REMARK,
+    REVENUE_AMOUNT_REMARK,
+)
 from utils import generate_query_context
 
 logger = get_logger(__name__)
-
-TAX_RATE = 0.19
-TAX_REMARK = f"The tax rate is {TAX_RATE}."
-EXPENSE_AMOUNT_REMARK = (
-    "The user provided the net_amount. You need to calculate the gross_amount."
-)
-REVENUE_AMOUNT_REMARK = """The user provide the gross_amount. You should use the 
-tax rate to calculate the net_amount."""
 
 
 def main() -> None:

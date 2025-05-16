@@ -7,6 +7,7 @@ from pydantic import BaseModel
 
 from agents.utils import parse_function_args, run_tool_from_response
 from configs.logging_config import get_logger
+from configs.model_configs import MODEL, MAX_STEPS, COLOR
 from tools.base import Tool, ToolResult
 
 logger = get_logger(__name__)
@@ -34,9 +35,6 @@ Return only one tool call at a time.
 
 {context}
 """
-MODEL = "gpt-4o-mini"
-MAX_STEPS = 5
-COLOR = "green"
 
 
 class StepResult(BaseModel):

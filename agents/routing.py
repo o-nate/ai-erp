@@ -6,10 +6,7 @@ from openai import OpenAI
 
 from agents.task import TaskAgent
 from agents.utils import parse_function_args
-
-MODEL = "gpt-4o-mini"
-MAX_STEPS = 5
-COLOR = "green"
+from configs.model_configs import MODEL, MAX_STEPS, COLOR
 
 SYSTEM_MESSAGE = """
 You are a helpful assistant.

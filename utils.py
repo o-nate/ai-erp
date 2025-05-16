@@ -10,12 +10,10 @@ import sqlalchemy
 from pydantic import BaseModel
 
 from configs.logging_config import get_logger
+from configs.model_configs import CONTEXT_STRING, DAYS
 from database.models import Expense, Revenue
 
 logger = get_logger(__name__)
-
-CONTEXT_STRING = "You can access the following tables in the database:\n"
-DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
 
 def orm_model_to_string(input_model_cls: BaseModel) -> str:
