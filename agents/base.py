@@ -121,14 +121,35 @@ class OpenAIAgent:
             and len(response.choices[0].message.tool_calls) > 1
         ):
             logger.warning("Multiple tool calls detected, requesting single tool call")
-            messages = [
-                *self.step_history,
+            # Find the original user input from the messages history
+            original_user_message = next(
+                (
+                    msg
+                    for msg in reversed(messages)
+                    if hasattr(msg, "role") and msg.role == "user"
+                ),
+                None,
+            )
+            original_user_input_content = (
+                original_user_message.content
+                if original_user_message and hasattr(original_user_message, "content")
+                else ""
+            )
+
+            # Create a new, clean message history for the retry
+            new_messages = [
+                {"role": "system", "content": self.system_message},
+                *self.examples,
+                {
+                    "role": "user",
+                    "content": original_user_input_content,
+                },  # Use the retrieved original user input
                 {
                     "role": "user",
                     "content": "Error: Please return only one tool call at a time.",
                 },
             ]
-            return self.run_step(messages=messages, tools=tools)
+            return self.run_step(messages=new_messages, tools=tools)
 
         self.step_history.append(response.choices[0].message)
 

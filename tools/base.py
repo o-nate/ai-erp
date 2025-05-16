@@ -6,7 +6,10 @@ from langchain_core.utils.function_calling import convert_to_openai_tool
 from pydantic import BaseModel, ConfigDict
 from sqlmodel import SQLModel
 
+from configs.logging_config import get_logger
 from tools.convert import convert_to_openai_tool
+
+logger = get_logger(__name__)
 
 
 class ToolResult(BaseModel):
@@ -29,21 +32,27 @@ class Tool(BaseModel):
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    def run(self, **kwargs) -> ToolResult:
-        """Responsible for executing the tool’s function with the provided input arguments"""
-        missing_values = self.validate_input(**kwargs)
-        if missing_values:
-            content = f"Missing values: {', '.join(missing_values)}"
-            return ToolResult(content=content, success=False)
-        if self.parse_model:
-            if hasattr(self.model, "model_validate"):
-                input_ = self.model.model_validate(kwargs)
-            else:
-                input_ = self.model(**kwargs)
-            result = self.function(input_)
-        else:
+    def run(self, **kwargs):
+        """Responsible for executing the tool's function with the provided input arguments"""
+        logger.debug("Running tool %s with kwargs: %s", self.name, kwargs)
+        logger.debug("Type of self.function: %s", type(self.function))
+        import inspect
+
+        try:
+            logger.debug(
+                "Signature of self.function: %s", inspect.signature(self.function)
+            )
+            missing_values = self.validate_input(**kwargs)
+            if missing_values:
+                content = f"Missing values: {', '.join(missing_values)}"
+                return ToolResult(content=content, success=False)
             result = self.function(**kwargs)
-        return ToolResult(content=str(result), success=True)
+            return ToolResult(content=str(result), success=True)
+        except Exception as e:
+            logger.error("Error running tool %s: %s", self.name, str(e))
+            return ToolResult(
+                content="An error occurred while running the tool", success=False
+            )
 
     def validate_input(self, **kwargs) -> list[str]:
         """Compares the input arguments passed to the tool with the expected input
