@@ -1,6 +1,7 @@
 """Specialized agent for routing tasks"""
 
 import colorama
+from langsmith import traceable
 
 from openai import OpenAI
 
@@ -63,6 +64,7 @@ class RoutingAgent:
             examples.extend(agent.routing_example)
         return examples
 
+    @traceable
     def run(self, user_input: str, employee_id: int = None, **kwargs):
         context = kwargs.get("context") or self.context
         if context:

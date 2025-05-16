@@ -5,6 +5,9 @@ from colorama import Fore
 from openai import OpenAI
 from pydantic import BaseModel
 
+from langsmith import traceable
+from langsmith.wrappers import wrap_openai
+
 from agents.utils import parse_function_args, run_tool_from_response
 from configs.logging_config import get_logger
 from configs.model_configs import MODEL, MAX_STEPS, COLOR
@@ -47,7 +50,7 @@ class OpenAIAgent:
     def __init__(
         self,
         tools: list[Tool],
-        client: OpenAI = OpenAI(),
+        client: OpenAI = wrap_openai(OpenAI()),
         system_message: str = SYSTEM_MESSAGE,
         model_name: str = MODEL,
         max_steps: int = MAX_STEPS,
@@ -72,6 +75,7 @@ class OpenAIAgent:
             color_prefix = Fore.__dict__[color.upper()]
             print(color_prefix + f"{tag}: {message}{colorama.Style.RESET_ALL}")
 
+    @traceable
     def run(self, user_input: str, context: str = None):
         openai_tools = [tool.openai_tool_schema for tool in self.tools]
         system_message = self.system_message.format(context=context)

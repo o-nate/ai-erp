@@ -1,5 +1,7 @@
 """Main script"""
 
+from dotenv import load_dotenv
+
 from agents.routing import RoutingAgent
 from agents.task import TaskAgent
 
@@ -16,6 +18,8 @@ from configs.model_configs import (
     REVENUE_AMOUNT_REMARK,
 )
 from utils import generate_query_context
+
+load_dotenv()
 
 logger = get_logger(__name__)
 
