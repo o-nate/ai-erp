@@ -7,15 +7,8 @@ class ReportSchema(BaseModel):
     report: str
 
 
-def report_function(**kwargs) -> str:
-    """Report a message or result"""
-    if "report" in kwargs:
-        return kwargs["report"]
-    elif "message" in kwargs:
-        return kwargs["message"]
-    elif "issue" in kwargs:
-        return kwargs["issue"]
-    raise ValueError("Missing required 'report', 'message', or 'issue' parameter")
+def report_function(report: ReportSchema) -> str:
+    return report.report
 
 
 report_tool = Tool(
@@ -23,5 +16,5 @@ report_tool = Tool(
     model=ReportSchema,
     function=report_function,
     validate_missing=False,
-    parse_model=False,
+    parse_model=True,
 )

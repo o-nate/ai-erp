@@ -1,6 +1,6 @@
 """Base class for tools"""
 
-from typing import Any, Callable, Type
+from typing import Any, Callable, Type, Union
 
 from langchain_core.utils.function_calling import convert_to_openai_tool
 from pydantic import BaseModel, ConfigDict
@@ -21,7 +21,7 @@ class Tool(BaseModel):
     """
 
     name: str
-    model: BaseModel | SQLModel | None
+    model: Union[Type[BaseModel], Type[SQLModel], None]
     function: Callable
     validate_missing: bool = True
     parse_model: bool = False
@@ -31,11 +31,10 @@ class Tool(BaseModel):
 
     def run(self, **kwargs) -> ToolResult:
         """Responsible for executing the tool’s function with the provided input arguments"""
-        if self.validate_missing and self.model is not None:
-            missing_values = self.validate_input(**kwargs)
-            if missing_values:
-                content = f"Missing values: {', '.join(missing_values)}"
-                return ToolResult(content=content, success=False)
+        missing_values = self.validate_input(**kwargs)
+        if missing_values:
+            content = f"Missing values: {', '.join(missing_values)}"
+            return ToolResult(content=content, success=False)
         if self.parse_model:
             if hasattr(self.model, "model_validate"):
                 input_ = self.model.model_validate(kwargs)
@@ -66,8 +65,9 @@ class Tool(BaseModel):
         schema["function"]["name"] = self.name
         if schema["function"]["parameters"].get("required"):
             del schema["function"]["parameters"]["required"]
-        if self.exclude_keys:
-            for key in self.exclude_keys:
-                if key in schema["function"]["parameters"]["properties"]:
-                    del schema["function"]["parameters"]["properties"][key]
+        schema["function"]["parameters"]["properties"] = {
+            key: value
+            for key, value in schema["function"]["parameters"]["properties"].items()
+            if key not in self.exclude_keys
+        }
         return schema
