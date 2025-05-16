@@ -31,13 +31,14 @@ def query_data_function(**kwargs) -> ToolResult:
     """Query the database through natural language"""
     query_config = QueryConfig.model_validate(kwargs)
 
-    if query_config.table_name not in TABLES:
+    table_name_lower = query_config.table_name.lower()
+    if table_name_lower not in TABLES:
         return ToolResult(
-            content=f"Table name {query_config.table_name} not found in database models.",
+            content=f"Table name {query_config.table_name} not found in database models (looked for {table_name_lower}).",
             success=False,
         )
 
-    sql_model = TABLES[query_config.table_name]
+    sql_model = TABLES[table_name_lower]
     data = sql_query_from_config(query_config, sql_model)
 
     return ToolResult(content=f"Query results: {data}", success=True)
@@ -46,7 +47,7 @@ def query_data_function(**kwargs) -> ToolResult:
 def sql_query_from_config(query_config: QueryConfig, sql_model: SQLModel) -> list:
     with Session(db.engine) as session:
         selection = []
-        for column in query_config.select_columns:
+        for column in query_config.columns:
             if column not in sql_model.__annotations__:
                 return f"Column {column} not found in model {sql_model.__name__}"
             selection.append(getattr(sql_model, column))

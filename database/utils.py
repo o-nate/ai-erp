@@ -1,19 +1,30 @@
 """Database utilities"""
 
-from datetime import datetime
+from datetime import datetime, time
 
 
 def validate_date(date_to_validate):
     if isinstance(date_to_validate, datetime):
         return date_to_validate
 
-    for day in ["%Y-%m-%d", "%Y-%m-%d %H:%M:%S"]:
+    for day in ["%Y-%m-%d", "%Y-%m-%d %H:%M:%S", "%Y-%m-%dT%H:%M:%SZ"]:
         try:
-            return datetime.strftime(date_to_validate, day)
+            return datetime.strptime(date_to_validate, day)
         except ValueError:
             pass
 
     raise ValueError("Invalid date format")
+
+
+def validate_time(time_to_validate):
+    if isinstance(time_to_validate, time):
+        return time_to_validate
+
+    if isinstance(time_to_validate, str):
+        try:
+            return time.fromisoformat(time_to_validate)
+        except ValueError:
+            raise ValueError("Invalid time format")
 
 
 def numeric_validator(value_to_validate):

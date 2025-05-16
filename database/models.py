@@ -6,52 +6,16 @@ from sqlmodel import SQLModel, Field, UniqueConstraint, Relationship
 from datetime import time, datetime
 from typing_extensions import Annotated
 
-from database.utils import numeric_validator, validate_date
+from database.utils import numeric_validator, validate_date, validate_time
 from configs.logging_config import get_logger
 from configs.model_configs import TAX_RATE
 
 logger = get_logger(__name__)
 
 
-# === validator ===
-def validate_date(v):
-    if isinstance(v, datetime):
-        return v
-
-    for f in ["%Y-%m-%d", "%Y-%m-%d %H:%M:%S", "%Y-%m-%dT%H:%M:%SZ"]:
-        try:
-            return datetime.strptime(v, f)
-        except ValueError:
-            pass
-
-    raise ValueError("Invalid date format")
-
-
-def validate_time(v):
-    if isinstance(v, time):
-        return v
-
-    if isinstance(v, str):
-        try:
-            return time.fromisoformat(v)
-        except ValueError:
-            raise ValueError("Invalid time format")
-
-
-def numeric_validator(v):
-    if isinstance(v, int):
-        return float(v)
-    elif isinstance(v, float):
-        return v
-    raise ValueError("Value must be a number")
-
-
 DateFormat = Annotated[datetime, BeforeValidator(validate_date)]
 TimeFormat = Annotated[time, BeforeValidator(validate_time)]
 Numeric = Annotated[float, BeforeValidator(numeric_validator)]
-
-
-# ==== Models ===
 
 
 class Employee(SQLModel, table=True):

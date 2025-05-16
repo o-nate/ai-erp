@@ -90,9 +90,11 @@ def main() -> None:
     )
 
     # routing_agent.run("I have spent 5 € on a office stuff. Last Thursday")
-    routing_agent.run(
-        "Two weeks ago on Saturday we had a revenue of 1000 € in the shop"
-    )
+    # routing_agent.run(
+    #     "Two weeks ago on Saturday we had a revenue of 1000 € in the shop"
+    # )
+    # routing_agent.run("How much revenue did we made this month?")
+    routing_agent.run("How much did we spend this month?")
 
 
 if __name__ == "__main__":
