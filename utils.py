@@ -31,22 +31,12 @@ def orm_model_to_string(input_model_cls: BaseModel) -> str:
                 return key, value.__args__[0]
         return key, value
 
-    logger.debug("input_model_cls: %s", input_model_cls.__annotations__)
-
     fields = dict(
         filter(
             None,
             (process_field(k, v) for k, v in input_model_cls.__annotations__.items()),
         )
     )
-    logger.debug("fields: %s", fields)
-    for k, v in fields.items():
-        logger.debug(
-            "k: %s, v.__name__: %s, type: %s",
-            k,
-            v,
-            type(v),
-        )
     return ", ".join([f"{k} = <{v.__name__}>" for k, v in fields.items()])
 
 

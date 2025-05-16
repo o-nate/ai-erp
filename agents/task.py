@@ -28,6 +28,7 @@ IMPORTANT: When calling a tool, you MUST include all required parameters in the 
 {{
     "description": "office supplies",
     "net_amount": 5.0,
+    "gross_amount": 5.95,
     "tax_rate": 0.19,
     "date": "2025-05-08"
 }}

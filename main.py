@@ -54,13 +54,6 @@ def main() -> None:
         function=query_data_function,
     )
 
-    logger.debug(
-        "Tools added: %s, %s, %s",
-        add_expense_tool.name,
-        add_revenue_tool.name,
-        query_data_tool.name,
-    )
-
     query_task_agent = TaskAgent(
         name="query_agent",
         description="An agent that can perform queries on multiple data sources",

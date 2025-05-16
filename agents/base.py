@@ -109,13 +109,11 @@ class OpenAIAgent:
         return step_result.content
 
     def run_step(self, messages: list[dict], tools):
-        logger.debug("Starting run_step with messages: %s", messages)
 
         # Plan next step
         response = self.client.chat.completions.create(
             model=self.model_name, messages=messages, tools=tools
         )
-        logger.debug("Got response from OpenAI: %s", response.choices[0].message)
 
         # Check for multiple tool calls
         if (

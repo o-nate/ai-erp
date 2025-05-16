@@ -28,7 +28,7 @@ You will receive feedback based on the outcomes of each tool's task execution or
 explanations for any tasks that couldn't be completed. This feedback loop is crucial 
 for addressing and resolving any issues by strategically deploying the available tools.
 """
-MODEL = "gpt-4o-mini"
+MODEL = "gpt-3.5-turbo-0125"
 MAX_STEPS = 7
 COLOR = "green"
 

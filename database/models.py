@@ -7,7 +7,10 @@ from datetime import time, datetime
 from typing_extensions import Annotated
 
 from database.utils import numeric_validator, validate_date
+from configs.logging_config import get_logger
 from configs.model_configs import TAX_RATE
+
+logger = get_logger(__name__)
 
 
 # === validator ===
@@ -133,6 +136,7 @@ class Revenue(SQLModel, table=True):
                     (data["gross_amount"] - data["net_amount"]) / data["net_amount"], 2
                 )
 
+        logger.debug("Data: %s", data)
         return data
 
 
