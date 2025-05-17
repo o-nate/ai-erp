@@ -8,7 +8,7 @@ from pydantic import BaseModel, ConfigDict
 from sqlmodel import SQLModel
 
 from configs.logging_config import get_logger
-from tools.convert import convert_to_openai_tool
+from domain.tools.convert import convert_to_openai_tool
 
 logger = get_logger(__name__)
 

@@ -6,9 +6,9 @@ from sqlmodel import SQLModel, Field, UniqueConstraint, Relationship
 from datetime import time, datetime
 from typing_extensions import Annotated
 
-from database.utils import numeric_validator, validate_date, validate_time
 from configs.logging_config import get_logger
 from configs.model_configs import TAX_RATE
+from persistance.utils import numeric_validator, validate_date, validate_time
 
 logger = get_logger(__name__)
 

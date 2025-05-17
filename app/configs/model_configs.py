@@ -1,6 +1,6 @@
 """Model configurations"""
 
-MODEL = "gpt-3.5-turbo-0125"
+MODEL = "gpt-4o-mini"
 MAX_STEPS = 5
 COLOR = "green"
 

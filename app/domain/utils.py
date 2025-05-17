@@ -11,7 +11,7 @@ from pydantic import BaseModel
 
 from configs.logging_config import get_logger
 from configs.model_configs import CONTEXT_STRING, DAYS
-from database.models import Expense, Revenue
+from persistance.models import Expense, Revenue
 
 logger = get_logger(__name__)
 

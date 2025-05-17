@@ -6,8 +6,8 @@ from datetime import datetime
 from sqlmodel import select, Session, SQLModel
 
 from configs.logging_config import get_logger
-from database import db
-from database.models import Expense
+from persistance import db
+from persistance.models import Expense
 
 logger = get_logger(__name__)
 

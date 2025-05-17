@@ -1,7 +1,9 @@
 """Database connection and setup"""
 
 import os
+
 from typing import Optional
+from pathlib import Path
 
 from sqlmodel import SQLModel, create_engine, Session
 
@@ -9,11 +11,14 @@ from configs.logging_config import get_logger
 
 logger = get_logger(__name__)
 
+# local stored database
+DATABASE_DIRECTORY = Path(__file__).parents[1]
+
 # * Local database
-DATABASE_URL = "sqlite:///app.db"
+DATABASE_URL = "sqlite:///" + str(DATABASE_DIRECTORY / "app.db")
 
 # * In-memory database for testing
-TEST_DATABASE_URL = "sqlite:///test.db"
+TEST_DATABASE_URL = "sqlite:///" + str(DATABASE_DIRECTORY / "test.db")
 
 if os.getenv("ENV") == "PRODUCTION":
     DB_URL_TO_USE = DATABASE_URL

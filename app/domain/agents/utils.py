@@ -3,7 +3,7 @@
 import json
 
 from configs.logging_config import get_logger
-from tools.base import Tool
+from domain.tools.base import Tool
 
 logger = get_logger(__name__)
 

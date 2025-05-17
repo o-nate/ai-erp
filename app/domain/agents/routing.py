@@ -1,12 +1,14 @@
 """Specialized agent for routing tasks"""
 
 import colorama
+
 from langsmith import traceable
+from langsmith.wrappers import wrap_openai
 
 from openai import OpenAI
 
-from agents.task import TaskAgent
-from agents.utils import parse_function_args
+from domain.agents.task import TaskAgent
+from domain.agents.utils import parse_function_args
 from configs.model_configs import MODEL, MAX_STEPS, COLOR
 
 SYSTEM_MESSAGE = """
@@ -37,7 +39,7 @@ class RoutingAgent:
     def __init__(
         self,
         tools: list[TaskAgent] = None,
-        client: OpenAI = OpenAI(),
+        client: OpenAI = wrap_openai(OpenAI()),
         system_message: str = SYSTEM_MESSAGE,
         model_name: str = MODEL,
         max_steps: int = MAX_STEPS,
