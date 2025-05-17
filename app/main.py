@@ -2,6 +2,7 @@
 
 import os
 import threading
+import sys
 
 from typing_extensions import Annotated
 
@@ -10,16 +11,16 @@ import uvicorn
 from dotenv import load_dotenv
 from fastapi import Depends, HTTPException, FastAPI, Query, Request
 
-from domain import message_service
-from configs.logging_config import get_logger
-from schema import Audio, Image, Message, Payload, User
+from .domain import message_service
+from .configs.logging_config import get_logger
+from .schema import Audio, Image, Message, Payload, User
 
 load_dotenv()
 
 logger = get_logger(__name__)
 
 VERIFICATION_TOKEN = os.getenv("VERIFICATION_TOKEN")
-IS_DEV_ENVIRONMENT = os.getenv("ENVIRONMENT").lower() == "dev"
+IS_DEV_ENVIRONMENT = os.getenv("ENV").lower() != "production"
 
 app = FastAPI(
     title="WhatsApp AI ERP",
@@ -153,4 +154,9 @@ async def receive_whatsapp(
 
 
 if __name__ == "__main__":
+    # Add the parent directory of 'app' to sys.path to allow running main.py directly
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    parent_dir = os.path.dirname(current_dir)
+    sys.path.append(parent_dir)
+
     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)

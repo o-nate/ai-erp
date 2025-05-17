@@ -1,9 +1,7 @@
 """WhatsApp domain-specific functions"""
 
-import os, sys
+import os
 
-CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.dirname(CURRENT_DIR))
 
 from typing import BinaryIO
 
@@ -26,23 +24,34 @@ load_dotenv()
 
 WHATSAPP_API_KEY = os.getenv("WHATSAPP_API_KEY")
 WHATSAPP_PHONE_NUMBER_ID = os.getenv("WHATSAPP_PHONE_NUMBER_ID")
+ALLOWED_USERS_LIST_STR = os.getenv("ALLOWED_USERS_LIST", "")
 
-ALLOWED_USERS = [
-    {
-        "id": 1,
-        "phone": "15857039796",
-        "first_name": "Nate",
-        "last_name": "Dos Santos",
-        "role": "basic",
-    },
-    {
-        "id": 2,
-        "phone": "5521988702009",
-        "first_name": "Laura",
-        "last_name": "Lawrence",
-        "role": "basic",
-    },
-]
+
+def parse_allowed_users(users_string: str) -> list[dict]:
+    """Parses a delimited string of users into a list of dictionaries."""
+    users = []
+    if not users_string:
+        return users
+    user_entries = users_string.split(";")
+    for user_entry in user_entries:
+        try:
+            id_str, phone, first_name, last_name, role = user_entry.split(",")
+            users.append(
+                {
+                    "id": int(id_str),
+                    "phone": phone,
+                    "first_name": first_name,
+                    "last_name": last_name,
+                    "role": role,
+                }
+            )
+        except ValueError as e:
+            logger.error(f"Skipping invalid user entry: {user_entry}. Error: {e}")
+            continue
+    return users
+
+
+ALLOWED_USERS = parse_allowed_users(ALLOWED_USERS_LIST_STR)
 
 llm = OpenAI()
 
@@ -100,9 +109,11 @@ def download_file_from_facebook(
 
 
 def authenticate_user_by_phone_number(phone_number: str) -> User | None:
-    for user in ALLOWED_USERS:
-        if user["phone"] == phone_number:
-            return User(**user)
+    """Authenticates a user by their phone number against the ALLOWED_USERS list."""
+    # ALLOWED_USERS is now populated from the environment variable
+    for user_data in ALLOWED_USERS:
+        if user_data["phone"] == phone_number:
+            return User(**user_data)
     return None
 
 
@@ -130,9 +141,6 @@ def send_whatsapp_message(to, message, template=True) -> dict:
         }
 
     logger.info("Attempting to send message to WhatsApp API.")
-    logger.debug("API URL: %s", url)
-    logger.debug("Headers: %s", headers)
-    logger.debug("Payload: %s", data)
 
     try:
         response = requests.post(url, headers=headers, data=json.dumps(data))
@@ -161,7 +169,6 @@ def respond_and_send_message(user_message: str, user: User) -> None:
 
 def main() -> None:
     user = authenticate_user_by_phone_number("15857039796")
-    logger.debug("User: %s", user)
     respond_and_send_message("What are my expenses to date?", user=user)
 
 
