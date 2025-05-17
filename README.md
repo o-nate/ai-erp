@@ -23,7 +23,7 @@ Before getting started, you will need accounts and credentials from the followin
 1.  **Clone the repository:**
 
     ```bash
-    git clone <repository_url>
+    git clone https://github.com/o-nate/ai-erp.git
     cd ai-erp
     ```
 2.  **Set up a Python virtual environment** (recommended):
