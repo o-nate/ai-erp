@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from tools.base import Tool
+from domain.tools.base import Tool
 
 
 class ReportSchema(BaseModel):

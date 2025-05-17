@@ -4,10 +4,10 @@ from typing import Type, Callable, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from agents.base import OpenAIAgent
-from tools.base import Tool
-from tools.report_tool import report_tool
-from tools.convert import convert_to_openai_tool
+from domain.agents.base import OpenAIAgent
+from domain.tools.base import Tool
+from domain.tools.report_tool import report_tool
+from domain.tools.convert import convert_to_openai_tool
 
 SYSTEM_MESSAGE = """You are tasked with completing specific objectives and must report the outcomes. At your disposal, you have a variety of tools, each specialized in performing a distinct type of task.
 
