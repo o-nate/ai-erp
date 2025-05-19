@@ -89,12 +89,4 @@ Fill in the following variables with your actual credentials:
 
 Your application should now be running locally and accessible via the ngrok URL, ready to receive messages from your Meta test phone number.
 
-Simply ensure you have add
-
-## Contributing
-
-(Optional section: Add instructions here if you welcome contributions)
-
-## License
-
-(Optional section: Add license information here)
+Simply ensure you have added numbers to send and receive messages to your test number both on the Meta platform as well as in the `.env` file.
