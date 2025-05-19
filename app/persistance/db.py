@@ -6,7 +6,7 @@ from pathlib import Path
 
 from sqlmodel import SQLModel, create_engine, Session
 
-from configs.logging_config import get_logger
+from ..configs.logging_config import get_logger
 
 logger = get_logger(__name__)
 

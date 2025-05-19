@@ -5,10 +5,12 @@ from typing import Literal
 from pydantic import BaseModel
 from sqlmodel import select, Session, SQLModel
 
-from configs.logging_config import get_logger
-from domain.tools.base import ToolResult
-from persistance import db
-from persistance.models import Customer, Expense, Revenue
+from .base import ToolResult
+
+from ...configs.logging_config import get_logger
+
+from ...persistance import db
+from ...persistance.models import Customer, Expense, Revenue
 
 logger = get_logger(__name__)
 

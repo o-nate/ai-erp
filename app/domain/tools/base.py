@@ -7,8 +7,9 @@ from langchain_core.utils.function_calling import convert_to_openai_tool
 from pydantic import BaseModel, ConfigDict
 from sqlmodel import SQLModel
 
-from configs.logging_config import get_logger
-from domain.tools.convert import convert_to_openai_tool
+from .convert import convert_to_openai_tool
+
+from ...configs.logging_config import get_logger
 
 logger = get_logger(__name__)
 

@@ -7,9 +7,10 @@ from langsmith.wrappers import wrap_openai
 
 from openai import OpenAI
 
-from domain.agents.task import TaskAgent
-from domain.agents.utils import parse_function_args
-from configs.model_configs import MODEL, MAX_STEPS, COLOR
+from .task import TaskAgent
+from .utils import parse_function_args
+
+from ...configs.model_configs import MODEL, MAX_STEPS, COLOR
 
 SYSTEM_MESSAGE = """
 You are a helpful assistant.

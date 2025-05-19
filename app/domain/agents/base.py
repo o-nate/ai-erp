@@ -8,10 +8,10 @@ from pydantic import BaseModel
 from langsmith import traceable
 from langsmith.wrappers import wrap_openai
 
-from domain.agents.utils import parse_function_args, run_tool_from_response
-from configs.logging_config import get_logger
-from configs.model_configs import MODEL, MAX_STEPS, COLOR
-from domain.tools.base import Tool, ToolResult
+from .utils import parse_function_args, run_tool_from_response
+from ..tools.base import Tool, ToolResult
+from ...configs.logging_config import get_logger
+from ...configs.model_configs import MODEL, MAX_STEPS, COLOR
 
 logger = get_logger(__name__)
 
