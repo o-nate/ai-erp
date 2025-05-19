@@ -1,13 +1,13 @@
 """Tool for adding data to the database"""
 
 from typing import Callable, Type
-from datetime import datetime
 
-from sqlmodel import select, Session, SQLModel
+from sqlmodel import Session, SQLModel
 
-from configs.logging_config import get_logger
-from persistance import db
-from persistance.models import Expense
+from ...configs.logging_config import get_logger
+
+from ...persistance import db
+from ...persistance.models import Expense
 
 logger = get_logger(__name__)
 

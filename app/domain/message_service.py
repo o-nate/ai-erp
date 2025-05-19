@@ -11,11 +11,9 @@ import requests
 from dotenv import load_dotenv
 from openai import OpenAI
 
-from configs.logging_config import get_logger
-
-from domain.agents.demo_agent import demo_agent
-
-from schema import Audio, User
+from .agents.demo_agent import demo_agent
+from ..configs.logging_config import get_logger
+from ..schema import Audio, User
 
 
 logger = get_logger(__name__)

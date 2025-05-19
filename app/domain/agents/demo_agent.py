@@ -1,20 +1,21 @@
 """Demo agent for testing"""
 
-from configs.model_configs import (
+from ...configs.model_configs import (
     EXPENSE_AMOUNT_REMARK,
     REVENUE_AMOUNT_REMARK,
     TAX_REMARK,
 )
 
-from domain.agents.routing import RoutingAgent
-from domain.agents.task import TaskAgent
-from domain.utils import generate_query_context
+from .routing import RoutingAgent
+from .task import TaskAgent
 
-from domain.tools.add import add_entry_to_table
-from domain.tools.base import Tool
-from domain.tools.query import QueryConfig, query_data_function
+from ..utils import generate_query_context
 
-from persistance.models import Expense, Revenue, Customer
+from ..tools.add import add_entry_to_table
+from ..tools.base import Tool
+from ..tools.query import QueryConfig, query_data_function
+
+from ...persistance.models import Expense, Revenue, Customer
 
 # * Initialize tools
 add_expense_tool = Tool(

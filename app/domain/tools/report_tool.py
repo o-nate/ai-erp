@@ -1,6 +1,8 @@
+"""Tool to report final results"""
+
 from pydantic import BaseModel
 
-from domain.tools.base import Tool
+from .base import Tool
 
 
 class ReportSchema(BaseModel):
