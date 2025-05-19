@@ -1,4 +1,4 @@
-# AI ERP Prototype
+# AI ERP WhatsApp Bot Prototype
 
 This project is a prototype of an agentic AI-based Enterprise Resource Planning (ERP) system. The goal is to provide an easy-to-use interface for interacting with the ERP functionalities through a simple WhatsApp messaging interface.
 
