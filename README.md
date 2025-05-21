@@ -29,7 +29,7 @@ Before getting started, you will need accounts and credentials from the followin
 2.  **Set up a Python virtual environment** (recommended):
 
     ```bash
-    python -m venv venv
+    virtualenv venv
     # On Windows
     .\venv\Scripts\activate
     # On macOS and Linux
