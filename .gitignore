@@ -1,6 +1,7 @@
 # Project-specific ignores
 *.db
-/logs 
+/logs
+.vscode/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

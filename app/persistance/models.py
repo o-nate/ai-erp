@@ -84,6 +84,8 @@ class Revenue(SQLModel, table=True):
     gross_amount: Numeric
     tax_rate: Numeric
     date: DateFormat
+    customer_id: Optional[int] = Field(default=None, foreign_key="customer.id")
+    customer: Optional["Customer"] = Relationship(back_populates="revenues")
 
     @model_validator(mode="before")
     @classmethod
@@ -134,6 +136,7 @@ class Customer(SQLModel, table=True):
     city: str
     zip: str
     country: str
+    revenues: list["Revenue"] = Relationship(back_populates="customer")
 
 
 class Invoice(SQLModel, table=True):

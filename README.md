@@ -89,4 +89,9 @@ Fill in the following variables with your actual credentials:
 
 Your application should now be running locally and accessible via the ngrok URL, ready to receive messages from your Meta test phone number.
 
-Simply ensure you have added numbers to send and receive messages to your test number both on the Meta platform as well as in the `.env` file.
+Simply ensure you have add any phone numbers associated with the `ALLOWED_USERS_LIST` to the list of recipient phone numbers on the Meta platform in API Setup.
+
+<b>Note: If you would like to begin testing with mock data, run the `mock_data` module from your root directory:</b>
+```bash
+python -m app.persistance.mock_data
+```

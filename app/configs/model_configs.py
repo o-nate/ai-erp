@@ -1,7 +1,7 @@
 """Model configurations"""
 
 MODEL = "gpt-4o-mini"
-MAX_STEPS = 5
+MAX_STEPS = 7
 COLOR = "green"
 
 
