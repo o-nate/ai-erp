@@ -50,7 +50,7 @@ LOGGING_CONFIG = {
         "console": {
             "class": "logging.StreamHandler",
             "formatter": "standard",
-            "level": "DEBUG",
+            "level": "WARNING",
         },
         "file": {
             "class": "logging.FileHandler",
@@ -65,13 +65,23 @@ LOGGING_CONFIG = {
             "level": "DEBUG",
             "propagate": True,
         },
-        "matplotlib": {
+        "app": {  # App logger
             "handlers": ["console", "file"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+        "sqlalchemy": {
+            "handlers": ["file"],
             "level": "WARNING",
             "propagate": False,
         },
-        "streamlit": {
-            "handlers": ["console", "file"],
+        "sqlalchemy.engine": {
+            "handlers": ["file"],
+            "level": "WARNING",
+            "propagate": False,
+        },
+        "sqlalchemy.engine.Engine": {
+            "handlers": ["file"],
             "level": "WARNING",
             "propagate": False,
         },

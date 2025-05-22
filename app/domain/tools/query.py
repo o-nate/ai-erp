@@ -4,6 +4,7 @@ from typing import Literal
 
 from pydantic import BaseModel
 from sqlmodel import select, Session, SQLModel
+from sqlalchemy import func, literal_column
 
 from .base import ToolResult
 
@@ -33,6 +34,7 @@ def query_data_function(**kwargs) -> ToolResult:
     """Query the database through natural language"""
     query_config = QueryConfig.model_validate(kwargs)
 
+    # Convert table name to lowercase for consistent lookup
     table_name_lower = query_config.table_name.lower()
     if table_name_lower not in TABLES:
         return ToolResult(
@@ -50,9 +52,26 @@ def sql_query_from_config(query_config: QueryConfig, sql_model: SQLModel) -> lis
     with Session(db.engine) as session:
         selection = []
         for column in query_config.columns:
-            if column not in sql_model.__annotations__:
-                return f"Column {column} not found in model {sql_model.__name__}"
-            selection.append(getattr(sql_model, column))
+            # Handle SQL aggregation functions
+            if column.startswith("SUM(") and column.endswith(")"):
+                col_name = column[4:-1].strip()
+                if col_name not in sql_model.__annotations__:
+                    return f"Column {col_name} not found in model {sql_model.__name__}"
+                selection.append(func.sum(getattr(sql_model, col_name)))
+            elif column.startswith("AVG(") and column.endswith(")"):
+                col_name = column[4:-1].strip()
+                if col_name not in sql_model.__annotations__:
+                    return f"Column {col_name} not found in model {sql_model.__name__}"
+                selection.append(func.avg(getattr(sql_model, col_name)))
+            elif column.startswith("COUNT(") and column.endswith(")"):
+                col_name = column[6:-1].strip()
+                if col_name not in sql_model.__annotations__:
+                    return f"Column {col_name} not found in model {sql_model.__name__}"
+                selection.append(literal_column(f"COUNT({col_name})"))
+            else:
+                if column not in sql_model.__annotations__:
+                    return f"Column {column} not found in model {sql_model.__name__}"
+                selection.append(getattr(sql_model, column))
 
         statement = select(*selection)
         where_queries = query_config.where
