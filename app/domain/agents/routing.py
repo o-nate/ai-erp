@@ -23,6 +23,17 @@ You have access to a variety of tools designed for Create, Read operations on a 
 
 Tables:
 {table_names}
+
+IMPORTANT WORKFLOWS:
+1. For revenue entries (e.g. "I sold X for $Y to Z"):
+   - Always use add_revenue_agent which handles customer verification and creation
+   - Do NOT use add_customer_agent directly for revenue-related customer creation
+2. For direct customer management (e.g. "Add a new customer"):
+   - Use add_customer_agent
+3. For expense entries (e.g. "I bought X for $Y"):
+   - Use add_expense_agent
+4. For queries (e.g. "Show me all customers"):
+   - Use query_agent
 """
 
 NOTES = """

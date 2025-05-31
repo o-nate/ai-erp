@@ -4,11 +4,13 @@ import os
 
 from pathlib import Path
 
+from dotenv import load_dotenv
 from sqlmodel import SQLModel, create_engine, Session
 
 from ..configs.logging_config import get_logger
 
 logger = get_logger(__name__)
+load_dotenv()
 
 # local stored database
 DATABASE_DIRECTORY = Path(__file__).parents[1]

@@ -15,9 +15,8 @@ from .domain import message_service
 from .configs.logging_config import get_logger
 from .schema import Audio, Image, Message, Payload, User
 
-load_dotenv()
-
 logger = get_logger(__name__)
+load_dotenv()
 
 VERIFICATION_TOKEN = os.getenv("VERIFICATION_TOKEN")
 IS_DEV_ENVIRONMENT = os.getenv("ENV").lower() != "production"
