@@ -5,6 +5,7 @@ from colorama import Fore
 from openai import OpenAI
 from pydantic import BaseModel
 
+from dotenv import load_dotenv
 from langsmith import traceable
 from langsmith.wrappers import wrap_openai
 
@@ -14,6 +15,8 @@ from ...configs.logging_config import get_logger
 from ...configs.model_configs import MODEL, MAX_STEPS, COLOR
 
 logger = get_logger(__name__)
+
+load_dotenv()
 
 
 SYSTEM_MESSAGE = """You are tasked with comleting specific objectives and must report

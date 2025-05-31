@@ -1,5 +1,7 @@
 """Demo agent for testing"""
 
+from dotenv import load_dotenv
+
 from ...configs.model_configs import (
     EXPENSE_AMOUNT_REMARK,
     REVENUE_AMOUNT_REMARK,
@@ -17,6 +19,8 @@ from ..tools.query import QueryConfig, query_data_function
 
 from ...persistance.models import Expense, Revenue, Customer
 
+load_dotenv()
+
 # * Initialize tools
 add_expense_tool = Tool(
     name="add_expense_tool",
@@ -32,14 +36,14 @@ add_revenue_tool = Tool(
     function=add_entry_to_table(Revenue),
     model=Revenue,
     validate_missing=True,
-    # parse_model=True,
+    exclude_keys=["id", "customer"],
 )
 add_customer_tool = Tool(
     name="add_customer_tool",
     description="Useful for adding a customer to the database",
     function=add_entry_to_table(Customer),
     model=Customer,
-    # parse_model=True,
+    exclude_keys=["id", "revenues"],
 )
 query_data_tool = Tool(
     name="query_data_tool",
@@ -64,9 +68,16 @@ add_expense_agent = TaskAgent(
 add_revenue_agent = TaskAgent(
     name="add_revenue_agent",
     description="An agent that can add a revenue entry to the database",
-    create_user_context=lambda: generate_query_context(Revenue)
-    + f"\nRemarks: {TAX_REMARK} {REVENUE_AMOUNT_REMARK}",
-    tools=[add_revenue_tool],
+    create_user_context=lambda: (
+        generate_query_context(Revenue, Customer)
+        + f"\nRemarks: {TAX_REMARK} {REVENUE_AMOUNT_REMARK}\n"
+        + "IMPORTANT: Before adding revenue:\n"
+        + "1. If a customer is mentioned, check if they exist using query_data_tool\n"
+        + "2. If customer doesn't exist and you have their details, create them using add_customer_tool\n"
+        + "3. Add the revenue with add_revenue_tool (using the customer_id from step 1 or 2)\n"
+        + "4. If no customer is mentioned, proceed directly to adding revenue"
+    ),
+    tools=[query_data_tool, add_customer_tool, add_revenue_tool],
 )
 add_customer_agent = TaskAgent(
     name="add_customer_agent",

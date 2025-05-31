@@ -9,7 +9,7 @@ CONTEXT_STRING = "You can access the following tables in the database:\n"
 DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
 
-TAX_RATE = 0.19
+TAX_RATE = 0.10
 TAX_REMARK = f"The tax rate is {TAX_RATE}."
 EXPENSE_AMOUNT_REMARK = (
     "The user provided the net_amount. You need to calculate the gross_amount."
