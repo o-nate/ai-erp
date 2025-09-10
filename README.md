@@ -4,6 +4,8 @@ This project is a prototype of an agentic AI-based Enterprise Resource Planning 
 
 **Please Note:** This is a _prototype_ and not intended for production use.
 
+[![AI ERP WhatsApp Bot Demo](https://img.youtube.com/vi/2yOuya2JqsU/0.jpg)](https://www.youtube.com/watch?v=2yOuya2JqsU)
+
 ## Features
 
 - Interact with ERP functions via WhatsApp messages.
